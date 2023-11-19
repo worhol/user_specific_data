@@ -5,33 +5,33 @@ const eta = new Eta({ views: `${Deno.cwd()}/templates/` });
 
 const createTodo = async (c) => {
   const body = await c.req.parseBody();
-  await todoService.createTodo(body);
+  await todoService.createTodo(c.user.id, body);
   return c.redirect("/todos");
 };
 
 const showForm = async (c) => {
   return c.html(
-    eta.render("todos.eta", { todos: await todoService.listTodos() })
+    eta.render("todos.eta", { todos: await todoService.listTodos(c.user.id) })
   );
 };
 
 const showTodo = async (c) => {
   const id = c.req.param("id");
   return c.html(
-    eta.render("todo.eta", { todo: await todoService.getTodo(id) })
+    eta.render("todo.eta", { todo: await todoService.getTodo(c.user.id, id) })
   );
 };
 
-const updateTodo = async (c) =>{
-    const id = c.req.param("id");
-    const body = await c.req.parseBody();
-    await todoService.updateTodo(id, body);
-    return c.redirect(`/todos/${id}`);
+const updateTodo = async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.parseBody();
+  await todoService.updateTodo(c.user.id, id, body);
+  return c.redirect(`/todos/${id}`);
 };
-const deleteTodo = async (c)=>{
-    const id = c.req.param("id");
-    await todoService.deleteTodo(id);
-    return c.redirect("/todos");
+const deleteTodo = async (c) => {
+  const id = c.req.param("id");
+  await todoService.deleteTodo(c.user.id, id);
+  return c.redirect("/todos");
 };
 
 export { createTodo, showForm, showTodo, updateTodo, deleteTodo };
